@@ -1,1 +1,24 @@
+name: Generate NFT and Trigger Cloud Function
 
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+  workflow_dispatch:     # Enables manual trigger
+
+jobs:
+  generate-and-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run NFT Generator
+        run: python nft_generator.py
+
+      - name: Trigger Cloud Function
+        run: curl -X POST "https://REGION-PROJECT.cloudfunctions.net/triggerNFT" -H "Authorization: Bearer ${{ secrets.GCF_TOKEN }}"
